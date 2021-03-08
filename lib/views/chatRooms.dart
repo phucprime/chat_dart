@@ -17,7 +17,7 @@ class ChatRoom extends StatefulWidget {
 class _ChatRoomState extends State<ChatRoom> {
 
   AuthMethods authMethods = new AuthMethods();
-  DatabeaseMethods databeaseMethods = new DatabeaseMethods();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
   Stream chatRoomStream;
 
   Widget chatRoomList(){
@@ -48,7 +48,7 @@ class _ChatRoomState extends State<ChatRoom> {
 
   getUserInfo() async{
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
-    databeaseMethods.getChatRooms(Constants.myName).then((value){
+    databaseMethods.getChatRooms(Constants.myName).then((value){
       setState(() {
         chatRoomStream = value;
       });
@@ -58,7 +58,8 @@ class _ChatRoomState extends State<ChatRoom> {
     });
   }
 
-  Future<void> _showDialog() async {
+  // ignore: non_constant_identifier_names
+  Future<void> _warning_Log_Out_Dialog() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -77,7 +78,7 @@ class _ChatRoomState extends State<ChatRoom> {
               child: Text('Log Out'),
               onPressed: () {
                 authMethods.signOut();
-                // this will solve issue: 'pushReplacement' works as 'push' when navigator from a dialog
+                // this will resolve issue: 'pushReplacement' works as 'push' when navigator from a dialog
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 Navigator.pushReplacement(context, MaterialPageRoute(
                     builder: (context) => Authenticate()
@@ -101,12 +102,14 @@ class _ChatRoomState extends State<ChatRoom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.blue,
         title: Image.asset("assets/images/logo.png", height: 50,),
         actions: [
           GestureDetector(
             onTap: (){
-              _showDialog();
+              _warning_Log_Out_Dialog();
               },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -140,9 +143,11 @@ class ChatRoomItem extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) => Conversation(chatroomID)
         ));
+
+        Constants.friendName = username; // it will use as the chat title
       },
       child: Container(
-        color: Colors.black26,
+        color: Colors.white10,
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         child: Row(
           children: [
@@ -162,7 +167,9 @@ class ChatRoomItem extends StatelessWidget {
             SizedBox(width: 8,),
             Text(
               username,
-              style: simpleTextStyle(),
+              style: TextStyle(
+                color: Colors.black
+              ),
             )
           ],
         ),

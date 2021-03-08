@@ -1,6 +1,4 @@
-
 import 'dart:ui';
-
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/services/database.dart';
 import 'package:chat_app/views/conversation.dart';
@@ -15,14 +13,14 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  DatabeaseMethods databeaseMethods = new DatabeaseMethods();
+  DatabaseMethods databeaseMethods = new DatabaseMethods();
   TextEditingController searchTextEditingController = new TextEditingController();
 
   QuerySnapshot querySnapshot;
 
   bool isLoading = false;
 
-  Widget searchList(){
+  Widget searchResults(){
     return querySnapshot != null
             ?
     ListView.builder(
@@ -51,10 +49,15 @@ class _SearchState extends State<Search> {
     });
   }
 
-  createChatRoomAndStartConversation({ String username }){
-    if(username != Constants.myName){
+  // ignore: non_constant_identifier_names
+  createNew_Or_EnterExisted_ChatRoom({ String username }){
+    if(username != Constants.myName){ // if users message to another one
+      setState(() {
+        isLoading = true;
+      });
+      Constants.friendName = username; // it will use as the chat title
       String chatroomID = getChatRoomId(Constants.myName, username);
-      String chatroomID_convert = getChatRoomId(username, Constants.myName); // use it to check if chat room already existed
+      String chatroomIDConvert = getChatRoomId(username, Constants.myName); // use it to check if chat room already existed
 
       FirebaseFirestore.instance.collection("chatRoom")
           .where("chatroomID", isEqualTo: chatroomID)
@@ -65,38 +68,45 @@ class _SearchState extends State<Search> {
               Navigator.push(context, MaterialPageRoute(
                   builder: (context) => Conversation(chatroomID)
               ));
+
+              setState(() {
+                isLoading = false;
+              });
             } else {
               FirebaseFirestore.instance.collection("chatRoom")
-                  .where("chatroomID", isEqualTo: chatroomID_convert)
+                  .where("chatroomID", isEqualTo: chatroomIDConvert)
                   .get()
                   .then((value) {
                       if(value.size > 0){
                         // existed, direct to this room
                         Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => Conversation(chatroomID_convert)
+                            builder: (context) => Conversation(chatroomIDConvert)
                         ));
                       }
                       else {
                         // not existed, we will create a new chat room for these users
-                        List<String> users = [Constants.myName, username];
+                        List<String> users = [Constants.myName];
                         Map<String, dynamic> chatRoomMap = {
                           "users" : users,
                           "chatroomID" : chatroomID
                         };
-                        DatabeaseMethods().createChatRoom(chatroomID, chatRoomMap);
+                        DatabaseMethods().createChatRoom(chatroomID, chatRoomMap);
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) => Conversation(chatroomID)
                         ));
                       }
               });
-            }
-
+              setState(() {
+                isLoading = false;
+              });
+          }
       });
-    } else {
+    } else { // if users message to themselves
         return Toast.show("Can't message to yourself",
                           context,
                           duration: 3,
-                          backgroundColor: Colors.orangeAccent);
+                          backgroundColor: Colors.redAccent,
+                          gravity: Toast.TOP);
     }
   } // createChatRoomAndStartConversation
 
@@ -115,6 +125,7 @@ class _SearchState extends State<Search> {
     super.initState();
   }
 
+  // ignore: non_constant_identifier_names
   Widget SearchTitle({ String userName, String userEmail }){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -130,7 +141,7 @@ class _SearchState extends State<Search> {
           Spacer(),
           GestureDetector(
             onTap: (){
-              createChatRoomAndStartConversation(
+              createNew_Or_EnterExisted_ChatRoom(
                 username: userName
               );
             },
@@ -198,10 +209,7 @@ class _SearchState extends State<Search> {
                 ],
               ),
             ),
-            isLoading ? Align(
-                alignment: Alignment.bottomCenter,
-                child: LinearProgressIndicator()
-            ) : searchList()
+            isLoading ? Container(child: LinearProgressIndicator(),) : searchResults()
           ],
         ),
       ),

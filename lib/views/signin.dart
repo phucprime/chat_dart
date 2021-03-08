@@ -18,7 +18,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   AuthMethods authMethods = new AuthMethods();
-  DatabeaseMethods databeaseMethods = new DatabeaseMethods();
+  DatabaseMethods databeaseMethods = new DatabaseMethods();
   final formKey = GlobalKey<FormState>();
 
   TextEditingController emailTextEditingController = new TextEditingController();
@@ -48,6 +48,7 @@ class _SignInState extends State<SignIn> {
   signMeIn(){
     if(formKey.currentState.validate()){
       HelperFunctions.setUserEmailSharedPreference(emailTextEditingController.text);
+
       databeaseMethods.getUserByEmail(emailTextEditingController.text).then((value){
           snapshot = value;
           HelperFunctions.setUserNameSharedPreference(
@@ -63,11 +64,12 @@ class _SignInState extends State<SignIn> {
             // case log in successfully
             if(value != null){
               HelperFunctions.setUserLoggedInSharedPreference(true);
-              /*Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (context) => ChatRoom(),
-              ));*/
               Navigator.pushReplacement(context, _createRoute());
-              Toast.show("Login successfully", context, backgroundColor: Colors.blue, duration: 3);
+              Toast.show("Login successfully",
+                  context,
+                  backgroundColor: Colors.blue,
+                  duration: 3,
+                  gravity: Toast.TOP);
             }
             //case incorrect email / password
             else {
@@ -78,7 +80,8 @@ class _SignInState extends State<SignIn> {
                   "There is no user corresponding to this identifier",
                   context,
                   duration: 4,
-                  backgroundColor: Colors.red
+                  backgroundColor: Colors.red,
+                gravity: Toast.TOP
               );
             }
       });
@@ -88,7 +91,7 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context), //An app bar to display at the top of the scaffold.
+      appBar: appBarMain(context),
       body: isLoading
             ? Container(
               child: Center( child: CircularProgressIndicator(),),
@@ -111,6 +114,7 @@ class _SignInState extends State<SignIn> {
                             .hasMatch(val) ? null : "Please enter a correct email";
                       },
                       controller: emailTextEditingController,
+                        keyboardType: TextInputType.emailAddress,
                         decoration: textFieldInputDecoration("Email"),
                         style: simpleTextStyle()
                     ),

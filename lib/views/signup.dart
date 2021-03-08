@@ -17,7 +17,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   AuthMethods authMethods = new AuthMethods();
-  DatabeaseMethods databeaseMethods = new DatabeaseMethods();
+  DatabaseMethods databeaseMethods = new DatabaseMethods();
 
   final formKey = GlobalKey<FormState>();
   TextEditingController userNameTextEditingController = new TextEditingController();
@@ -114,6 +114,7 @@ class _SignUpState extends State<SignUp> {
                           .hasMatch(val) ? null : "Enter correct email";
                     },
                     controller: emailNameTextEditingController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: textFieldInputDecoration("Email"),
                     style: simpleTextStyle()
                   ),

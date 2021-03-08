@@ -1,6 +1,5 @@
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/services/database.dart';
-import 'package:chat_app/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
 class Conversation extends StatefulWidget {
@@ -13,22 +12,32 @@ class Conversation extends StatefulWidget {
 
 class _ConversationState extends State<Conversation> {
 
-  DatabeaseMethods databeaseMethods = new DatabeaseMethods();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController messageTextEditingController = new TextEditingController();
   Stream chatMessageStream;
 
-  Widget ChatMessageList(){
-    return StreamBuilder(
-      stream: chatMessageStream,
-        builder: (context, snapshot){
-          return snapshot.hasData ? ListView.builder(
-            itemCount: snapshot.data.docs.length,
-            itemBuilder: (context, index){
-              return MessageTitle(snapshot.data.docs[index].data()["message"],
-                  snapshot.data.docs[index].data()["sendBy"] == Constants.myName);
-            }
-          ) : Container();
-        },
+  // ignore: non_constant_identifier_names
+  Widget MessageList(){
+    return GestureDetector(
+      onTap: (){
+        // cancel keyboard if it's shown
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: StreamBuilder(
+        stream: chatMessageStream,
+          builder: (context, snapshot){
+            return snapshot.hasData ? ListView.builder(
+              itemCount: snapshot.data.docs.length,
+              itemBuilder: (context, index){
+                return MessageBubble(snapshot.data.docs[index].data()["message"],
+                    snapshot.data.docs[index].data()["sendBy"] == Constants.myName);
+              }
+            ) : Container();
+          },
+      ),
     );
   }
 
@@ -39,14 +48,14 @@ class _ConversationState extends State<Conversation> {
         "sendBy": Constants.myName,
         "time": DateTime.now().millisecondsSinceEpoch,
       };
-      databeaseMethods.addMessage(widget.chatroomID, messageMap);
+      databaseMethods.addMessage(widget.chatroomID, messageMap);
       messageTextEditingController.clear();
     }
   }
 
   @override
   void initState() {
-    databeaseMethods.getConversationMessages(widget.chatroomID).then((value){
+    databaseMethods.getConversationMessages(widget.chatroomID).then((value){
       setState(() {
         chatMessageStream = value;
       });
@@ -57,16 +66,23 @@ class _ConversationState extends State<Conversation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Text(Constants.friendName),
+      ),
       body: Container(
         child: Stack(
           children: [
-            ChatMessageList(),
+            MessageList(),
             Container(
               alignment: Alignment.bottomCenter,
               child: Container(
-                color: Color(0x54FFFFFF),
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                decoration: BoxDecoration(
+                 //   borderRadius: BorderRadius.circular(50),
+                  color: Color(0xFFECECEC),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                 child: Row(
                   children: [
                     Expanded(
@@ -78,9 +94,9 @@ class _ConversationState extends State<Conversation> {
                           decoration: InputDecoration(
                               hintText: "Message...",
                               hintStyle: TextStyle(
-                                  color: Colors.white54
+                                  color: Color(0xFF6A6969)
                               ),
-                              border: InputBorder.none
+                              border: InputBorder.none, // remove underline border
                           ),
                         )
                     ),
@@ -89,18 +105,9 @@ class _ConversationState extends State<Conversation> {
                         sendMessage();
                       },
                       child: Container(
-                          height: 40,
-                          width: 40,
-                          padding: EdgeInsets.all(11),
-                          decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                  colors: [
-                                    const Color(0x45FFFFFF),
-                                    const Color(0x0FFFFFFF)
-                                  ]
-                              ),
-                              borderRadius: BorderRadius.circular(40)
-                          ),
+                          height: 50,
+                          width: 50,
+                          padding: EdgeInsets.all(5),
                           child: Image.asset("assets/images/send.png")
                       ),
                     ),
@@ -115,10 +122,10 @@ class _ConversationState extends State<Conversation> {
   }
 }
 
-class MessageTitle extends StatelessWidget {
+class MessageBubble extends StatelessWidget {
   final String message;
   final bool isSendByMe;
-  MessageTitle(this.message, this.isSendByMe);
+  MessageBubble(this.message, this.isSendByMe);
 
   @override
   Widget build(BuildContext context) {
@@ -132,12 +139,12 @@ class MessageTitle extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isSendByMe ? [
-              const Color(0xff007EF4),
-              const Color(0xff2A75BC)
+              const Color(0xFF2196F3),
+              const Color(0xFF2196F3)
             ]
                 : [
-              const Color(0x1AFFFFFF),
-              const Color(0x1AFFFFFF)
+              const Color(0xFFECECEC),
+              const Color(0xFFECECEC)
             ],
           ),
           borderRadius: isSendByMe ?
@@ -154,7 +161,7 @@ class MessageTitle extends StatelessWidget {
               )
         ),
         child: Text(message, style: TextStyle(
-          color: Colors.white,
+          color: isSendByMe ? Colors.white : Colors.black,
           fontSize: 17,
         ),),
       ),

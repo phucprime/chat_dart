@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DatabeaseMethods{
+class DatabaseMethods{
   getUserByUserName(String username) async{
    return await FirebaseFirestore.instance.collection("users")
         .where("name", isEqualTo: username).get();
@@ -46,7 +46,7 @@ class DatabeaseMethods{
   getChatRooms(String username) async {
     return await FirebaseFirestore.instance.collection("chatRoom")
         .where("users", arrayContains: username)
-        .snapshots();
+        .snapshots(); // return room chat base on username
   }
 
 }
