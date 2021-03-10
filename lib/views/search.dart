@@ -23,17 +23,17 @@ class _SearchState extends State<Search> {
   Widget searchResults(){
     return querySnapshot != null
             ?
-    ListView.builder(
-      itemCount: querySnapshot.docs.length,
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          return SearchTitle(
-              userName: querySnapshot.docs[index].data()["name"],
-              userEmail: querySnapshot.docs[index].data()["email"],
-          );
-        })
+            ListView.builder(
+              itemCount: querySnapshot.docs.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return SearchTitle(
+                      userName: querySnapshot.docs[index].data()["name"],
+                      userEmail: querySnapshot.docs[index].data()["email"],
+                  );
+                })
             :
-    Container();
+            Container(child: Text("a"),);
   }
 
   initSearch(){
@@ -85,7 +85,7 @@ class _SearchState extends State<Search> {
                       }
                       else {
                         // not existed, we will create a new chat room for these users
-                        List<String> users = [Constants.myName];
+                        List<String> users = [Constants.myName, Constants.friendName]; // will create 2 'users' record, map 2 users together
                         Map<String, dynamic> chatRoomMap = {
                           "users" : users,
                           "chatroomID" : chatroomID
@@ -110,7 +110,6 @@ class _SearchState extends State<Search> {
     }
   } // createChatRoomAndStartConversation
 
-  // format username1_username2
   getChatRoomId(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
       return "$b\_$a";

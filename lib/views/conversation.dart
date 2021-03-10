@@ -88,7 +88,7 @@ class _ConversationState extends State<Conversation> {
                     Expanded(
                         child: TextField(
                           style: TextStyle(
-                              color: Colors.white
+                              color: Colors.black
                           ),
                           controller: messageTextEditingController,
                           decoration: InputDecoration(
