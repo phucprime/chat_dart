@@ -21,8 +21,6 @@ class _ChatRoomState extends State<ChatRoom> {
   Stream chatRoomStream;
 
   Widget chatRoomList(){
-
-    print(chatRoomStream.toString());
     return StreamBuilder(
       stream: chatRoomStream,
         builder: (context, snapshot){

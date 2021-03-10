@@ -20,14 +20,14 @@ class _SearchState extends State<Search> {
 
   bool isLoading = false;
 
-  Widget searchResults(){
+  Widget getSearchResults(){
     return querySnapshot != null
             ?
             ListView.builder(
               itemCount: querySnapshot.docs.length,
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
-                  return SearchTitle(
+                  return itemSearchResult(
                       userName: querySnapshot.docs[index].data()["name"],
                       userEmail: querySnapshot.docs[index].data()["email"],
                   );
@@ -49,8 +49,9 @@ class _SearchState extends State<Search> {
     });
   }
 
+  // create new chat room or enter into an existed chat room
   // ignore: non_constant_identifier_names
-  createNew_Or_EnterExisted_ChatRoom({ String username }){
+  createChatRoom({ String username }){
     if(username != Constants.myName){ // if users message to another one
       setState(() {
         isLoading = true;
@@ -108,7 +109,7 @@ class _SearchState extends State<Search> {
                           backgroundColor: Colors.redAccent,
                           gravity: Toast.TOP);
     }
-  } // createChatRoomAndStartConversation
+  } // createChatRoom
 
   getChatRoomId(String a, String b) {
     if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
@@ -125,7 +126,7 @@ class _SearchState extends State<Search> {
   }
 
   // ignore: non_constant_identifier_names
-  Widget SearchTitle({ String userName, String userEmail }){
+  Widget itemSearchResult({ String userName, String userEmail }){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -133,14 +134,21 @@ class _SearchState extends State<Search> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userName, style: simpleTextStyle(),),
-              Text(userEmail, style: simpleTextStyle(),),
+              Text(userName,
+                  style: TextStyle(
+                    fontSize: 17,
+                )
+              ),
+              Text(userEmail,
+                  style: TextStyle(
+                    fontSize: 17,
+              )),
             ],
           ),
           Spacer(),
           GestureDetector(
             onTap: (){
-              createNew_Or_EnterExisted_ChatRoom(
+              createChatRoom(
                 username: userName
               );
             },
@@ -161,12 +169,16 @@ class _SearchState extends State<Search> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context),
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: Image.asset("assets/images/logo.png", height: 50,),
+      ),
       body: Container(
+        color: Colors.white,
         child: Column(
           children: [
             Container(
-              color: Color(0x54FFFFFF),
+              color: Color(0xFFE8E8E8),
               padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: Row(
                 children: [
@@ -174,12 +186,12 @@ class _SearchState extends State<Search> {
                       child: TextField(
                         controller: searchTextEditingController,
                         style: TextStyle(
-                          color: Colors.white
+                          color: Colors.black
                         ),
                         decoration: InputDecoration(
                           hintText: "Search username...",
                           hintStyle: TextStyle(
-                            color: Colors.white54
+                            color: Colors.black54
                           ),
                           border: InputBorder.none
                         ),
@@ -194,12 +206,7 @@ class _SearchState extends State<Search> {
                         width: 40,
                         padding: EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              const Color(0x36FFFFFF),
-                              const Color(0x0FFFFFFF)
-                            ]
-                          ),
+                          color: Colors.lightBlue,
                           borderRadius: BorderRadius.circular(40)
                         ),
                         child: Image.asset("assets/images/search_white.png")
@@ -208,7 +215,7 @@ class _SearchState extends State<Search> {
                 ],
               ),
             ),
-            isLoading ? Container(child: LinearProgressIndicator(),) : searchResults()
+            isLoading ? Container(child: LinearProgressIndicator(),) : getSearchResults()
           ],
         ),
       ),
