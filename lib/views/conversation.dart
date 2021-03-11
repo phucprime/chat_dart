@@ -32,8 +32,10 @@ class _ConversationState extends State<Conversation> {
             return snapshot.hasData ? ListView.builder(
               itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index){
-                return MessageBubble(snapshot.data.docs[index].data()["message"],
-                    snapshot.data.docs[index].data()["sendBy"] == Constants.myName);
+                return MessageBubble(
+                    snapshot.data.docs[index].data()["message"],
+                    snapshot.data.docs[index].data()["sendBy"] == Constants.myName
+                );
               }
             ) : Container();
           },

@@ -47,10 +47,18 @@ class DatabaseMethods{
         .snapshots();
   }
 
+  getLatestnMessage(String chatroomID) async {
+    return await FirebaseFirestore.instance.collection("chatRoom")
+        .doc(chatroomID)
+        .collection("chats")
+        .orderBy("time", descending: false).limit(1)
+        .snapshots();
+  }
+
   getChatRooms(String username) async {
     return await FirebaseFirestore.instance.collection("chatRoom")
         .where("users", arrayContains: username)
-        .snapshots(); // return room chat base on username
+        .snapshots();
   }
 
 }

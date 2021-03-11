@@ -32,7 +32,8 @@ class _ChatRoomState extends State<ChatRoom> {
                     .toString()
                     .replaceAll("${Constants.myName}" + "_", "")
                     .replaceAll("_" + "${Constants.myName}", ""),
-               snapshot.data.docs[index].data()["chatroomID"]
+               snapshot.data.docs[index].data()["chatroomID"],
+               "latest"
               );
             }
           ) : Container();
@@ -59,7 +60,7 @@ class _ChatRoomState extends State<ChatRoom> {
   }
 
   // ignore: non_constant_identifier_names
-  Future<void> _warning_Log_Out_Dialog() async {
+  Future<void> warningLogOutDialog() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false, // user must tap button!
@@ -109,7 +110,7 @@ class _ChatRoomState extends State<ChatRoom> {
         actions: [
           GestureDetector(
             onTap: (){
-              _warning_Log_Out_Dialog();
+              warningLogOutDialog();
               },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
@@ -134,7 +135,8 @@ class _ChatRoomState extends State<ChatRoom> {
 class ChatRoomItem extends StatelessWidget {
   final String username;
   final String chatroomID;
-  ChatRoomItem(this.username, this.chatroomID);
+  final String latestMessage;
+  ChatRoomItem(this.username, this.chatroomID, this.latestMessage);
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +171,13 @@ class ChatRoomItem extends StatelessWidget {
               username,
               style: TextStyle(
                 color: Colors.black
+              ),
+            ),
+            SizedBox(width: 8,),
+            Text(
+              latestMessage,
+              style: TextStyle(
+                  color: Colors.black
               ),
             )
           ],
