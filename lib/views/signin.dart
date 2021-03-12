@@ -18,11 +18,13 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   AuthMethods authMethods = new AuthMethods();
-  DatabaseMethods databeaseMethods = new DatabaseMethods();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
   final formKey = GlobalKey<FormState>();
 
-  TextEditingController emailTextEditingController = new TextEditingController();
-  TextEditingController passwordTextEditingController = new TextEditingController();
+  TextEditingController emailTextEditingController =
+    new TextEditingController();
+  TextEditingController passwordTextEditingController =
+    new TextEditingController();
 
   bool isLoading = false;
   QuerySnapshot snapshot;
@@ -35,7 +37,8 @@ class _SignInState extends State<SignIn> {
         var end = Offset.zero;
         var curve = Curves.ease;
 
-        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+        var tween = Tween(begin: begin, end: end)
+            .chain(CurveTween(curve: curve));
 
         return SlideTransition(
           position: animation.drive(tween),
@@ -47,40 +50,43 @@ class _SignInState extends State<SignIn> {
 
   signMeIn(){
     if(formKey.currentState.validate()){
-      HelperFunctions.setUserEmailSharedPreference(emailTextEditingController.text);
+      HelperFunctions
+          .setUserEmailSharedPreference(emailTextEditingController.text);
 
-      databeaseMethods.getUserByEmail(emailTextEditingController.text).then((value){
-          snapshot = value;
-          HelperFunctions.setUserNameSharedPreference(
-              snapshot.docs[0].data()["name"]);
+      databaseMethods.getUserByEmail(emailTextEditingController.text)
+          .then((value){
+        snapshot = value;
+        HelperFunctions.setUserNameSharedPreference(
+            snapshot.docs[0].data()["name"]);
       });
-      //loading indicator
       setState(() {
         isLoading = true;
       });
-      //start sign user in
+      // start sign user in
       authMethods.signInWithEmailAndPassword(emailTextEditingController.text,
           passwordTextEditingController.text).then((value){
-            // case log in successfully
+            // log in successfully
             if(value != null){
               HelperFunctions.setUserLoggedInSharedPreference(true);
               Navigator.pushReplacement(context, _createRoute());
-              Toast.show("Login successfully",
-                  context,
-                  backgroundColor: Colors.blue,
-                  duration: 3,
-                  gravity: Toast.TOP);
+              Toast.show(
+                "Login successfully",
+                context,
+                backgroundColor: Colors.blue,
+                duration: 3,
+                gravity: Toast.TOP
+              );
             }
-            //case incorrect email / password
+            // incorrect email / password
             else {
               setState(() {
                 isLoading = false;
               });
               Toast.show(
-                  "There is no user corresponding to this identifier",
-                  context,
-                  duration: 4,
-                  backgroundColor: Colors.red,
+                "There is no user corresponding to this identifier",
+                context,
+                duration: 4,
+                backgroundColor: Colors.red,
                 gravity: Toast.BOTTOM
               );
             }
@@ -92,11 +98,9 @@ class _SignInState extends State<SignIn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarMain(context),
-      body: isLoading
-            ? Container(
+      body: isLoading ? Container(
               child: Center( child: CircularProgressIndicator(),),
-            )
-            : SingleChildScrollView(
+            ) : SingleChildScrollView(
         child: Container(
           child: Container(
             height: MediaQuery.of(context).size.height - 250,
@@ -110,8 +114,10 @@ class _SignInState extends State<SignIn> {
                   children: [
                     TextFormField(
                       validator: (val){
-                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                            .hasMatch(val) ? null : "Please enter a correct email";
+                        return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?"
+                        r"^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(val) ? null
+                            : "Please enter a correct email";
                       },
                       controller: emailTextEditingController,
                         keyboardType: TextInputType.emailAddress,
@@ -121,7 +127,8 @@ class _SignInState extends State<SignIn> {
                     TextFormField(
                       obscureText: true,
                       validator: (val){
-                        return val.length > 6 ? null : "Password at least 6 characters";
+                        return val.length > 6 ? null
+                            : "Password at least 6 characters";
                       },
                       controller: passwordTextEditingController,
                       decoration: textFieldInputDecoration("Password"),
@@ -131,8 +138,11 @@ class _SignInState extends State<SignIn> {
                     Container(
                         alignment: Alignment.centerRight,
                         child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text("Forgot password?", style: simpleTextStyle(),),
+                          padding: EdgeInsets
+                              .symmetric(horizontal: 16, vertical: 8),
+                          child: Text("Forgot password?",
+                            style: simpleTextStyle(),
+                          ),
                         )
                     ),
                     SizedBox(height: 15,),
@@ -143,7 +153,8 @@ class _SignInState extends State<SignIn> {
                       child: Container(
                           child: Container(
                               alignment: Alignment.center,
-                              width: MediaQuery.of(context).size.width, // full horizontal
+                              // full horizontal
+                              width: MediaQuery.of(context).size.width,
                               padding: EdgeInsets.symmetric(vertical: 15),
                               decoration: BoxDecoration(
                                   gradient: LinearGradient(
@@ -166,16 +177,18 @@ class _SignInState extends State<SignIn> {
                     Container(
                         child: Container(
                             alignment: Alignment.center,
-                            width: MediaQuery.of(context).size.width, // full horizontal
+                            // full horizontal
+                            width: MediaQuery.of(context).size.width,
                             padding: EdgeInsets.symmetric(vertical: 15),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(30)
                             ),
-                            child: Text("Sign In with Google", style: TextStyle(
+                            child: Text("Sign In with Google",
+                              style: TextStyle(
                                 color: Colors.black87,
                                 fontSize: 15
-                            ),
+                              ),
                             )
                         )
                     ),
@@ -183,18 +196,21 @@ class _SignInState extends State<SignIn> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text("Don't have an account? ", style: mediumTextStyle(),),
+                        Text("Don't have an account? ",
+                          style: mediumTextStyle(),
+                        ),
                         GestureDetector(
                           onTap: (){
                             widget.toggle();
                           },
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Text("Register now", style: TextStyle(
+                            child: Text("Register now",
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,
                                 decoration: TextDecoration.underline
-                            ),
+                              ),
                             ),
                           ),
                         )

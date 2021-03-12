@@ -13,7 +13,8 @@ class Conversation extends StatefulWidget {
 class _ConversationState extends State<Conversation> {
 
   DatabaseMethods databaseMethods = new DatabaseMethods();
-  TextEditingController messageTextEditingController = new TextEditingController();
+  TextEditingController messageTextEditingController =
+    new TextEditingController();
   Stream chatMessageStream;
 
   // ignore: non_constant_identifier_names
@@ -34,7 +35,8 @@ class _ConversationState extends State<Conversation> {
               itemBuilder: (context, index){
                 return MessageBubble(
                     snapshot.data.docs[index].data()["message"],
-                    snapshot.data.docs[index].data()["sendBy"] == Constants.myName
+                    snapshot.data.docs[index]
+                        .data()["sendBy"] == Constants.myName
                 );
               }
             ) : Container();
@@ -50,7 +52,8 @@ class _ConversationState extends State<Conversation> {
         "sendBy": Constants.myName,
         "time": DateTime.now().millisecondsSinceEpoch,
       };
-      databaseMethods.addMessage(widget.chatroomID, messageMap);
+      String latestMsg = messageTextEditingController.text;
+      databaseMethods.addMessage(widget.chatroomID, messageMap, latestMsg);
       messageTextEditingController.clear();
     }
   }
@@ -98,7 +101,8 @@ class _ConversationState extends State<Conversation> {
                               hintStyle: TextStyle(
                                   color: Color(0xFF6A6969)
                               ),
-                              border: InputBorder.none, // remove underline border
+                              // remove underline border
+                              border: InputBorder.none,
                           ),
                         )
                     ),
@@ -132,7 +136,8 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: isSendByMe ? 0 : 6, right: isSendByMe ? 6 : 0),
+      padding: EdgeInsets
+          .only(left: isSendByMe ? 0 : 6, right: isSendByMe ? 6 : 0),
       width: MediaQuery.of(context).size.width,
       alignment: isSendByMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(

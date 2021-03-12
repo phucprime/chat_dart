@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_app/helper/authenticate.dart';
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';
@@ -28,12 +29,15 @@ class _ChatRoomState extends State<ChatRoom> {
             itemCount: snapshot.data.docs.length,
             itemBuilder: (context, index){
               return ChatRoomItem(
-                snapshot.data.docs[index].data()["chatroomID"]
-                    .toString()
-                    .replaceAll("${Constants.myName}" + "_", "")
-                    .replaceAll("_" + "${Constants.myName}", ""),
-               snapshot.data.docs[index].data()["chatroomID"],
-               "latest"
+                // username
+                  snapshot.data.docs[index].data()["chatroomID"].toString()
+                          .replaceAll("${Constants.myName}" + "_", "")
+                          .replaceAll("_" + "${Constants.myName}", ""),
+                 // chat room id
+                 snapshot.data.docs[index].data()["chatroomID"],
+                 // latest message, it shows below friend's name on the list
+                 snapshot.data.docs[index].data()["latestMessage"] != null
+                     ? snapshot.data.docs[index].data()["latestMessage"] : ""
               );
             }
           ) : Container();
@@ -63,7 +67,8 @@ class _ChatRoomState extends State<ChatRoom> {
   Future<void> warningLogOutDialog() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Log Out'),
@@ -79,13 +84,15 @@ class _ChatRoomState extends State<ChatRoom> {
               child: Text('Log Out'),
               onPressed: () {
                 authMethods.signOut();
-                // this will resolve issue: 'pushReplacement' works as 'push' when navigator from a dialog
+                // this will resolve issue: 'pushReplacement' works as 'push'
+                // when navigator from a dialog
                 Navigator.of(context).popUntil((route) => route.isFirst);
                 Navigator.pushReplacement(context, MaterialPageRoute(
                     builder: (context) => Authenticate()
                 ));
                 HelperFunctions.setUserLoggedInSharedPreference(false);
-                Toast.show("Log out successfully", context, backgroundColor: Colors.blue, duration: 3);
+                Toast.show("Log out successfully", context,
+                    backgroundColor: Colors.blue, duration: 3);
               },
             ),
             TextButton(
@@ -111,10 +118,10 @@ class _ChatRoomState extends State<ChatRoom> {
           GestureDetector(
             onTap: (){
               warningLogOutDialog();
-              },
+            },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(Icons.exit_to_app)
+              child: Icon(Icons.exit_to_app)
             ),
           )
         ],
@@ -145,14 +152,15 @@ class ChatRoomItem extends StatelessWidget {
         Navigator.push(context, MaterialPageRoute(
           builder: (context) => Conversation(chatroomID)
         ));
-
-        Constants.friendName = username; // it will use as the chat title
+        // it will use as the chat title
+        Constants.friendName = username;
       },
       child: Container(
         color: Colors.white10,
         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         child: Row(
           children: [
+            // Use first character as an avatar
             Container(
               height: 50,
               width: 50,
@@ -167,17 +175,26 @@ class ChatRoomItem extends StatelessWidget {
               ),
             ),
             SizedBox(width: 8,),
-            Text(
-              username,
-              style: TextStyle(
-                color: Colors.black
-              ),
-            ),
-            SizedBox(width: 8,),
-            Text(
-              latestMessage,
-              style: TextStyle(
-                  color: Colors.black
+            // Display friend's name and latest message below
+            Padding(
+              padding: const EdgeInsets.only(),
+              child: new Container(
+                child: new Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    new Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: new Text(username,
+                          style: new TextStyle(
+                              color: new Color.fromARGB(255, 117, 117, 117),
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.bold
+                          )
+                      ),
+                    ),
+                    new Text(latestMessage)
+                  ],
+                ),
               ),
             )
           ],

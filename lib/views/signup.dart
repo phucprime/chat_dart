@@ -20,9 +20,12 @@ class _SignUpState extends State<SignUp> {
   DatabaseMethods databeaseMethods = new DatabaseMethods();
 
   final formKey = GlobalKey<FormState>();
-  TextEditingController userNameTextEditingController = new TextEditingController();
-  TextEditingController emailNameTextEditingController = new TextEditingController();
-  TextEditingController passwordNameTextEditingController = new TextEditingController();
+  TextEditingController userNameTextEditingController =
+    new TextEditingController();
+  TextEditingController emailNameTextEditingController =
+    new TextEditingController();
+  TextEditingController passwordNameTextEditingController =
+    new TextEditingController();
 
   bool isLoading = false;
 
@@ -43,15 +46,19 @@ class _SignUpState extends State<SignUp> {
           setState(() {
             isLoading = false;
           });
-          Toast.show("Your username is existed", context, backgroundColor: Colors.red, duration: 4);
+          Toast.show(
+              "Your username is existed",
+              context, backgroundColor: Colors.red,
+              duration: 4
+          );
         }
-      // if username is not existed
+        // if username is not existed
         else {
           authMethods.signUpWithEmailAndPassword(
               emailNameTextEditingController.text,
               passwordNameTextEditingController.text)
               .then((value) {
-      // check email format and existed or not
+            // check email format and existed or not
             if (value != null) {
               Map<String, String> userInforMap = {
                 "name": userNameTextEditingController.text,
@@ -62,19 +69,27 @@ class _SignUpState extends State<SignUp> {
               HelperFunctions.setUserEmailSharedPreference(
                   emailNameTextEditingController.text);
               // create data on Cloud Fire Store
-              databeaseMethods.uploadUserInfor(userInforMap);
+              databeaseMethods.uploadUserInformation(userInforMap);
               // register success, direct to Login screen
               Navigator.pushReplacement(context, MaterialPageRoute(
                   builder: (context) => SignIn(this.widget.toggle)
               ));
-              Toast.show("Register successfully", context,
-                  backgroundColor: Colors.blue, duration: 4);
+              Toast.show(
+                  "Register successfully",
+                  context,
+                  backgroundColor: Colors.blue,
+                  duration: 4
+              );
             } else {
               setState(() {
                 isLoading = false;
               });
-              Toast.show("Your email is badly formatted or already in use", context,
-                  backgroundColor: Colors.red, duration: 4);
+              Toast.show(
+                  "Your email is badly formatted or already in use",
+                  context,
+                  backgroundColor: Colors.red,
+                  duration: 4
+              );
             }
           });
         }
@@ -85,10 +100,12 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBarMain(context), //An app bar to display at the top of the scaffold.
+      // An app bar to display at the top of the scaffold.
+      appBar: appBarMain(context),
       body: isLoading ? Container(
         child: Center(child: CircularProgressIndicator()),
-      ) : SingleChildScrollView(
+      )
+          : SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height - 300,
           alignment: Alignment.bottomCenter,
@@ -97,7 +114,9 @@ class _SignUpState extends State<SignUp> {
             child: Form(
               key: formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min, //Minimize the amount of free space along the main axis, subject to the incoming layout constraints.
+                // Minimize the amount of free space along the main axis,
+                // subject to the incoming layout constraints.
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   TextFormField(
                     validator: (val){
@@ -110,8 +129,10 @@ class _SignUpState extends State<SignUp> {
                   ),
                   TextFormField(
                     validator: (val){
-                      return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(val) ? null : "Enter correct email";
+                      return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?"
+                      r"^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                          .hasMatch(val) ? null
+                          : "Enter correct email";
                     },
                     controller: emailNameTextEditingController,
                     keyboardType: TextInputType.emailAddress,
@@ -135,7 +156,7 @@ class _SignUpState extends State<SignUp> {
                     child: Container(
                         child: Container(
                             alignment: Alignment.center,
-                            width: MediaQuery.of(context).size.width, // full horizontal
+                            width: MediaQuery.of(context).size.width,
                             padding: EdgeInsets.symmetric(vertical: 15),
                             decoration: BoxDecoration(
                                 gradient: LinearGradient(
@@ -146,10 +167,11 @@ class _SignUpState extends State<SignUp> {
                                 ),
                                 borderRadius: BorderRadius.circular(30)
                             ),
-                            child: Text("Sign Up", style: TextStyle(
+                            child: Text("Sign Up",
+                              style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 15
-                            ),
+                              ),
                             )
                         )
                     ),
@@ -158,18 +180,21 @@ class _SignUpState extends State<SignUp> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Already have an account? ", style: mediumTextStyle(),),
+                      Text("Already have an account? ",
+                        style: mediumTextStyle(),
+                      ),
                       GestureDetector(
                         onTap: (){
                           widget.toggle();
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text("Sign in now", style: TextStyle(
+                          child: Text("Sign in now",
+                            style: TextStyle(
                               color: Colors.white,
                               fontSize: 17,
                               decoration: TextDecoration.underline
-                          ),
+                            ),
                           ),
                         ),
                       )

@@ -13,34 +13,33 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  DatabaseMethods databeaseMethods = new DatabaseMethods();
-  TextEditingController searchTextEditingController = new TextEditingController();
+  DatabaseMethods databaseMethods = new DatabaseMethods();
+  TextEditingController searchTextEditingController =
+    new TextEditingController();
 
   QuerySnapshot querySnapshot;
 
   bool isLoading = false;
 
-  Widget getSearchResults(){
-    return querySnapshot != null
-            ?
+  Widget getSearchResults() {
+    return querySnapshot != null ?
             ListView.builder(
               itemCount: querySnapshot.docs.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
                   return itemSearchResult(
                       userName: querySnapshot.docs[index].data()["name"],
                       userEmail: querySnapshot.docs[index].data()["email"],
                   );
-                })
-            :
-            Container(child: Text("a"),);
+              }
+            ) : Container();
   }
 
   initSearch(){
     setState(() {
       isLoading = true;
     });
-    databeaseMethods.getUserByUserName(searchTextEditingController.text)
+    databaseMethods.getUserByUserName(searchTextEditingController.text)
         .then((val){
       setState(() {
         querySnapshot = val;
@@ -52,46 +51,53 @@ class _SearchState extends State<Search> {
   // create new chat room or enter into an existed chat room
   // ignore: non_constant_identifier_names
   createChatRoom({ String username }){
-    if(username != Constants.myName){ // if users message to another one
+    // if users message to another one
+    if(username != Constants.myName){
       setState(() {
         isLoading = true;
       });
-      Constants.friendName = username; // it will use as the chat title
+      // it will use as the chat title
+      Constants.friendName = username;
       String chatroomID = getChatRoomId(Constants.myName, username);
-      String chatroomIDConvert = getChatRoomId(username, Constants.myName); // use it to check if chat room already existed
-
+      // use it to check if chat room already existed
+      String chatroomIDConverse = getChatRoomId(username, Constants.myName);
+      // start get chat rooms from firebase
       FirebaseFirestore.instance.collection("chatRoom")
           .where("chatroomID", isEqualTo: chatroomID)
           .get()
           .then((value) {
+            // existed, direct to the room username1_username2
             if(value.size > 0){
-              // existed, direct to this room
               Navigator.push(context, MaterialPageRoute(
                   builder: (context) => Conversation(chatroomID)
               ));
-
               setState(() {
                 isLoading = false;
               });
             } else {
               FirebaseFirestore.instance.collection("chatRoom")
-                  .where("chatroomID", isEqualTo: chatroomIDConvert)
+                  .where("chatroomID", isEqualTo: chatroomIDConverse)
                   .get()
                   .then((value) {
+                      // existed,
+                      // direct to the converse room id username2_username1
                       if(value.size > 0){
-                        // existed, direct to this room
                         Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => Conversation(chatroomIDConvert)
+                            builder: (context) =>
+                                Conversation(chatroomIDConverse)
                         ));
                       }
+                      // not existed,
+                      // we will create a new chat room for these users
                       else {
-                        // not existed, we will create a new chat room for these users
-                        List<String> users = [Constants.myName, Constants.friendName]; // will create 2 'users' record, map 2 users together
+                        List<String> users =
+                            [Constants.myName, Constants.friendName];
                         Map<String, dynamic> chatRoomMap = {
                           "users" : users,
+                          "latestMessage" : "",
                           "chatroomID" : chatroomID
                         };
-                        DatabaseMethods().createChatRoom(chatroomID, chatRoomMap);
+                        databaseMethods.createChatRoom(chatroomID,chatRoomMap);
                         Navigator.push(context, MaterialPageRoute(
                             builder: (context) => Conversation(chatroomID)
                         ));
@@ -102,12 +108,16 @@ class _SearchState extends State<Search> {
               });
           }
       });
-    } else { // if users message to themselves
-        return Toast.show("Can't message to yourself",
-                          context,
-                          duration: 3,
-                          backgroundColor: Colors.redAccent,
-                          gravity: Toast.TOP);
+    }
+    // if users message to themselves
+    else {
+        return Toast.show(
+            "Can not message to yourself",
+            context,
+            duration: 3,
+            backgroundColor: Colors.redAccent,
+            gravity: Toast.TOP
+        );
     }
   } // createChatRoom
 
@@ -142,7 +152,8 @@ class _SearchState extends State<Search> {
               Text(userEmail,
                   style: TextStyle(
                     fontSize: 17,
-              )),
+                )
+              ),
             ],
           ),
           Spacer(),
@@ -215,7 +226,10 @@ class _SearchState extends State<Search> {
                 ],
               ),
             ),
-            isLoading ? Container(child: LinearProgressIndicator(),) : getSearchResults()
+            isLoading ?
+            Container(
+              child: LinearProgressIndicator(),
+            ) : getSearchResults()
           ],
         ),
       ),

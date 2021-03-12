@@ -10,9 +10,11 @@ class AuthMethods {
 
   Future signInWithEmailAndPassword(String email, String password) async {
     try{
+      // UserCredential = AuthResult(old version)
       UserCredential result = await _auth.signInWithEmailAndPassword
-        (email: email, password: password); //UserCredential = AuthResult(old version)
-      User user = result.user; //User = FirebaseUser
+        (email: email, password: password);
+      // User = FirebaseUser
+      User user = result.user;
       return _userFromFirebase(user);
     }catch(e){
       print(e.toString());

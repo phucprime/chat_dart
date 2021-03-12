@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DatabaseMethods{
   getUserByUserName(String username) async{
    return await FirebaseFirestore.instance.collection("users")
-        .where("name", isEqualTo: username)
+       .where("name", isEqualTo: username)
        .get();
   }
 
@@ -13,7 +13,7 @@ class DatabaseMethods{
         .get();
   }
 
-  uploadUserInfor(userMap){
+  uploadUserInformation(userMap){
     FirebaseFirestore.instance.collection("users")
         .add(userMap)
         .catchError((e){
@@ -30,7 +30,15 @@ class DatabaseMethods{
     });
   }
 
-  addMessage(String chatroomID, messageMap){
+  addMessage(String chatroomID, messageMap, newMessage){
+    // when users send a message, set it as latest message to show on the list
+    FirebaseFirestore.instance.collection("chatRoom")
+        .doc(chatroomID)
+        .update({"latestMessage": newMessage})
+        .catchError((e){
+      print(e.toString());
+    });
+    // add message to fire store
     FirebaseFirestore.instance.collection("chatRoom")
         .doc(chatroomID)
         .collection("chats")
@@ -44,14 +52,6 @@ class DatabaseMethods{
         .doc(chatroomID)
         .collection("chats")
         .orderBy("time", descending: false)
-        .snapshots();
-  }
-
-  getLatestnMessage(String chatroomID) async {
-    return await FirebaseFirestore.instance.collection("chatRoom")
-        .doc(chatroomID)
-        .collection("chats")
-        .orderBy("time", descending: false).limit(1)
         .snapshots();
   }
 
