@@ -93,13 +93,25 @@ class _ConversationState extends State<Conversation> {
                   children: [
                     Container(
                       margin: EdgeInsets.only(right: 8),
-                        child: Icon(Icons.collections, color: Colors.blue, size: 25,)
+                        child: Icon(
+                          Icons.collections,
+                          color: Colors.blue,
+                          size: 25,
+                        )
                     ),
                     Container(
-                        child: Icon(Icons.camera_alt, color: Colors.blue, size: 30,)
+                        child: Icon(
+                          Icons.camera_alt,
+                          color: Colors.blue,
+                          size: 30,
+                        )
                     ),
                     Container(
-                        child: Icon(Icons.gif, color: Colors.blue, size: 40,)
+                        child: Icon(
+                          Icons.gif,
+                          color: Colors.blue,
+                          size: 40,
+                        )
                     ),
                     Expanded(
                         child: TextField(

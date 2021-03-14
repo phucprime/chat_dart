@@ -142,7 +142,7 @@ class _SignUpState extends State<SignUp> {
                   TextFormField(
                     obscureText: true,
                     validator: (val){
-                      return val.length > 6 ? null : "At least 6 characters";
+                      return val.length >= 6 ? null : "At least 6 characters";
                     },
                     controller: passwordNameTextEditingController,
                     decoration: textFieldInputDecoration("Password"),
