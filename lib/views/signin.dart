@@ -96,6 +96,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Scaffold(
       appBar: appBarMain(context),
       body: isLoading ? Container(
@@ -122,6 +123,8 @@ class _SignInState extends State<SignIn> {
                       controller: emailTextEditingController,
                         keyboardType: TextInputType.emailAddress,
                         decoration: textFieldInputDecoration("Email"),
+                        textInputAction: TextInputAction.next,
+                        onEditingComplete: () => node.nextFocus(),
                         style: simpleTextStyle()
                     ),
                     TextFormField(
@@ -132,6 +135,10 @@ class _SignInState extends State<SignIn> {
                       },
                       controller: passwordTextEditingController,
                       decoration: textFieldInputDecoration("Password"),
+                      textInputAction: TextInputAction.go,
+                      onFieldSubmitted: (value){
+                        signMeIn();
+                      },
                       style: simpleTextStyle(),
                     ),
                     SizedBox(height: 15,),

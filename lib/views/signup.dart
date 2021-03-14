@@ -146,6 +146,10 @@ class _SignUpState extends State<SignUp> {
                     },
                     controller: passwordNameTextEditingController,
                     decoration: textFieldInputDecoration("Password"),
+                    textInputAction: TextInputAction.go,
+                    onFieldSubmitted: (value){
+                      signMeUp();
+                    },
                     style: simpleTextStyle(),
                   ),
                   SizedBox(height: 15,),

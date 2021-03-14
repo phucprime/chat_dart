@@ -181,7 +181,11 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.white,
+        // custom theme of the icon on the app bar
+        iconTheme: IconThemeData(
+          color: Colors.blue
+        ),
         title: Image.asset("assets/images/logo.png", height: 50,),
       ),
       body: Container(
@@ -189,17 +193,27 @@ class _SearchState extends State<Search> {
         child: Column(
           children: [
             Container(
-              color: Color(0xFFE8E8E8),
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              margin: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              height: 40,
+              decoration: BoxDecoration(
+                color: Color(0xFFEAEAEA),
+                borderRadius: BorderRadius.circular(30)
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 children: [
                   Expanded(
                       child: TextField(
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (value){
+                          initSearch();
+                        },
                         controller: searchTextEditingController,
                         style: TextStyle(
                           color: Colors.black
                         ),
                         decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(bottom: 8),
                           hintText: "Search username...",
                           hintStyle: TextStyle(
                             color: Colors.black54
@@ -212,23 +226,14 @@ class _SearchState extends State<Search> {
                     onTap: (){
                       initSearch();
                     },
-                    child: Container(
-                      height: 40,
-                        width: 40,
-                        padding: EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlue,
-                          borderRadius: BorderRadius.circular(40)
-                        ),
-                        child: Image.asset("assets/images/search_white.png")
-                    ),
+                    child: Icon(Icons.search_rounded),
                   ),
                 ],
               ),
             ),
             isLoading ?
             Container(
-              child: LinearProgressIndicator(),
+              child: CircularProgressIndicator(),
             ) : getSearchResults()
           ],
         ),

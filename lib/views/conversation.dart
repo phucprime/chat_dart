@@ -86,16 +86,31 @@ class _ConversationState extends State<Conversation> {
                 decoration: BoxDecoration(
                  //   borderRadius: BorderRadius.circular(50),
                   color: Color(0xFFECECEC),
+                  borderRadius: BorderRadius.circular(40)
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 10),
                 child: Row(
                   children: [
+                    Container(
+                      margin: EdgeInsets.only(right: 8),
+                        child: Icon(Icons.collections, color: Colors.blue, size: 25,)
+                    ),
+                    Container(
+                        child: Icon(Icons.camera_alt, color: Colors.blue, size: 30,)
+                    ),
+                    Container(
+                        child: Icon(Icons.gif, color: Colors.blue, size: 40,)
+                    ),
                     Expanded(
                         child: TextField(
                           style: TextStyle(
                               color: Colors.black
                           ),
                           controller: messageTextEditingController,
+                          textInputAction: TextInputAction.send,
+                          onSubmitted: (value){
+                            sendMessage();
+                          },
                           decoration: InputDecoration(
                               hintText: "Message...",
                               hintStyle: TextStyle(
@@ -104,18 +119,13 @@ class _ConversationState extends State<Conversation> {
                               // remove underline border
                               border: InputBorder.none,
                           ),
-                        )
+                        ),
                     ),
                     GestureDetector(
                       onTap: (){
                         sendMessage();
                       },
-                      child: Container(
-                          height: 50,
-                          width: 50,
-                          padding: EdgeInsets.all(5),
-                          child: Image.asset("assets/images/send.png")
-                      ),
+                      child: Icon(Icons.send, color: Colors.blue,),
                     ),
                   ],
                 ),

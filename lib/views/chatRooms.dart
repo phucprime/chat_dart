@@ -1,3 +1,4 @@
+import 'package:chat_app/views/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_app/helper/authenticate.dart';
 import 'package:chat_app/helper/constants.dart';
@@ -20,6 +21,9 @@ class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   Stream chatRoomStream;
+
+  int _currentIndex = 0;
+  Widget _body;
 
   Widget chatRoomList(){
     return StreamBuilder(
@@ -112,7 +116,7 @@ class _ChatRoomState extends State<ChatRoom> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.white,
         title: Image.asset("assets/images/logo.png", height: 50,),
         actions: [
           GestureDetector(
@@ -121,19 +125,54 @@ class _ChatRoomState extends State<ChatRoom> {
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.exit_to_app)
+              child: Icon(Icons.logout, color: Colors.blue,)
             ),
           )
         ],
       ),
-      body: chatRoomList(),
-      floatingActionButton: FloatingActionButton(
+      body: _body != null ? _body : chatRoomList(),
+      floatingActionButton: _currentIndex == 0 ? FloatingActionButton(
         child: Icon(Icons.search),
         onPressed: (){
           Navigator.push(context, MaterialPageRoute(
               builder: (context) => Search()
           ));
         },
+      ) : Container(),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _currentIndex,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blue.shade700,
+        unselectedItemColor: Colors.blue.withOpacity(.45),
+        selectedFontSize: 17,
+        unselectedFontSize: 14,
+        onTap: (value) {
+          // Respond to item press.
+          setState(() => _currentIndex = value);
+          switch(value){
+            case 0: setState(() {
+              _body = chatRoomList();
+            });
+            break;
+            case 1: setState(() {
+              _body = ProfilePage();
+            });
+            break;
+          }
+        },
+        items: [
+          BottomNavigationBarItem(
+            title: Text('Messages'),
+            icon: _currentIndex == 0 ? Icon(Icons.message)
+                : Icon(Icons.message_outlined),
+          ),
+          BottomNavigationBarItem(
+            title: Text('Profile'),
+            icon: _currentIndex == 1 ? Icon(Icons.person)
+                : Icon(Icons.person_outlined),
+          ),
+        ],
       ),
     );
   }
@@ -147,6 +186,7 @@ class ChatRoomItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Offset _tapDownPosition;
     return GestureDetector(
       onTap: (){
         Navigator.push(context, MaterialPageRoute(
@@ -186,7 +226,7 @@ class ChatRoomItem extends StatelessWidget {
                       padding: const EdgeInsets.only(bottom: 4),
                       child: new Text(username,
                           style: new TextStyle(
-                              color: new Color.fromARGB(255, 117, 117, 117),
+                              color: new Color.fromARGB(255, 101, 101, 101),
                               fontSize: 17.0,
                               fontWeight: FontWeight.bold
                           )
