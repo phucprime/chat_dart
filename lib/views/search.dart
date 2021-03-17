@@ -15,32 +15,33 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController searchTextEditingController =
-    new TextEditingController();
+      new TextEditingController();
 
   QuerySnapshot querySnapshot;
 
   bool isLoading = false;
 
   Widget getSearchResults() {
-    return querySnapshot != null ?
-            ListView.builder(
-              itemCount: querySnapshot.docs.length,
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                  return itemSearchResult(
-                      userName: querySnapshot.docs[index].data()["name"],
-                      userEmail: querySnapshot.docs[index].data()["email"],
-                  );
-              }
-            ) : Container();
+    return querySnapshot != null
+        ? ListView.builder(
+            itemCount: querySnapshot.docs.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              return itemSearchResult(
+                userName: querySnapshot.docs[index].data()["name"],
+                userEmail: querySnapshot.docs[index].data()["email"],
+              );
+            })
+        : Container();
   }
 
-  initSearch(){
+  initSearch() {
     setState(() {
       isLoading = true;
     });
-    databaseMethods.getUserByUserName(searchTextEditingController.text)
-        .then((val){
+    databaseMethods
+        .getUserByUserName(searchTextEditingController.text)
+        .then((val) {
       setState(() {
         querySnapshot = val;
         isLoading = false;
@@ -50,9 +51,9 @@ class _SearchState extends State<Search> {
 
   // create new chat room or enter into an existed chat room
   // ignore: non_constant_identifier_names
-  createChatRoom({ String username }){
+  createChatRoom({String username}) {
     // if users message to another one
-    if(username != Constants.myName){
+    if (username != Constants.myName) {
       setState(() {
         isLoading = true;
       });
@@ -62,62 +63,60 @@ class _SearchState extends State<Search> {
       // use it to check if chat room already existed
       String chatroomIDConverse = getChatRoomId(username, Constants.myName);
       // start get chat rooms from firebase
-      FirebaseFirestore.instance.collection("chatRoom")
+      FirebaseFirestore.instance
+          .collection("chatRoom")
           .where("chatroomID", isEqualTo: chatroomID)
           .get()
           .then((value) {
-            // existed, direct to the room username1_username2
-            if(value.size > 0){
-              Navigator.push(context, MaterialPageRoute(
-                  builder: (context) => Conversation(chatroomID)
-              ));
-              setState(() {
-                isLoading = false;
-              });
-            } else {
-              FirebaseFirestore.instance.collection("chatRoom")
-                  .where("chatroomID", isEqualTo: chatroomIDConverse)
-                  .get()
-                  .then((value) {
-                      // existed,
-                      // direct to the converse room id username2_username1
-                      if(value.size > 0){
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) =>
-                                Conversation(chatroomIDConverse)
-                        ));
-                      }
-                      // not existed,
-                      // we will create a new chat room for these users
-                      else {
-                        List<String> users =
-                            [Constants.myName, Constants.friendName];
-                        Map<String, dynamic> chatRoomMap = {
-                          "users" : users,
-                          "latestMessage" : "",
-                          "chatroomID" : chatroomID
-                        };
-                        databaseMethods.createChatRoom(chatroomID,chatRoomMap);
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (context) => Conversation(chatroomID)
-                        ));
-                      }
-              });
-              setState(() {
-                isLoading = false;
-              });
-          }
+        // existed, direct to the room username1_username2
+        if (value.size > 0) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Conversation(chatroomID)));
+          setState(() {
+            isLoading = false;
+          });
+        } else {
+          FirebaseFirestore.instance
+              .collection("chatRoom")
+              .where("chatroomID", isEqualTo: chatroomIDConverse)
+              .get()
+              .then((value) {
+            // existed,
+            // direct to the converse room id username2_username1
+            if (value.size > 0) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Conversation(chatroomIDConverse)));
+            }
+            // not existed,
+            // we will create a new chat room for these users
+            else {
+              List<String> users = [Constants.myName, Constants.friendName];
+              Map<String, dynamic> chatRoomMap = {
+                "users": users,
+                "latestMessage": "",
+                "chatroomID": chatroomID
+              };
+              databaseMethods.createChatRoom(chatroomID, chatRoomMap);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Conversation(chatroomID)));
+            }
+          });
+          setState(() {
+            isLoading = false;
+          });
+        }
       });
     }
     // if users message to themselves
     else {
-        return Toast.show(
-            "Can not message to yourself",
-            context,
-            duration: 3,
-            backgroundColor: Colors.redAccent,
-            gravity: Toast.TOP
-        );
+      return Toast.show("Can not message to yourself", context,
+          duration: 3, backgroundColor: Colors.redAccent, gravity: Toast.TOP);
     }
   } // createChatRoom
 
@@ -136,7 +135,7 @@ class _SearchState extends State<Search> {
   }
 
   // ignore: non_constant_identifier_names
-  Widget itemSearchResult({ String userName, String userEmail }){
+  Widget itemSearchResult({String userName, String userEmail}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       child: Row(
@@ -147,21 +146,17 @@ class _SearchState extends State<Search> {
               Text(userName,
                   style: TextStyle(
                     fontSize: 17,
-                )
-              ),
+                  )),
               Text(userEmail,
                   style: TextStyle(
                     fontSize: 17,
-                )
-              ),
+                  )),
             ],
           ),
           Spacer(),
           GestureDetector(
-            onTap: (){
-              createChatRoom(
-                username: userName
-              );
+            onTap: () {
+              createChatRoom(username: userName);
             },
             child: Container(
               decoration: BoxDecoration(
@@ -169,7 +164,10 @@ class _SearchState extends State<Search> {
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text("Message", style: simpleTextStyle(),),
+              child: Text(
+                "Message",
+                style: simpleTextStyle(),
+              ),
             ),
           )
         ],
@@ -183,10 +181,11 @@ class _SearchState extends State<Search> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         // custom theme of the icon on the app bar
-        iconTheme: IconThemeData(
-          color: Colors.blue
+        iconTheme: IconThemeData(color: Colors.blue),
+        title: Image.asset(
+          "assets/images/logo.png",
+          height: 50,
         ),
-        title: Image.asset("assets/images/logo.png", height: 50,),
       ),
       body: Container(
         color: Colors.white,
@@ -196,34 +195,27 @@ class _SearchState extends State<Search> {
               margin: EdgeInsets.symmetric(horizontal: 24, vertical: 10),
               height: 40,
               decoration: BoxDecoration(
-                color: Color(0xFFEAEAEA),
-                borderRadius: BorderRadius.circular(30)
-              ),
+                  color: Color(0xFFEAEAEA),
+                  borderRadius: BorderRadius.circular(30)),
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Row(
                 children: [
                   Expanded(
                       child: TextField(
-                        textInputAction: TextInputAction.search,
-                        onSubmitted: (value){
-                          initSearch();
-                        },
-                        controller: searchTextEditingController,
-                        style: TextStyle(
-                          color: Colors.black
-                        ),
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 8),
-                          hintText: "Search username...",
-                          hintStyle: TextStyle(
-                            color: Colors.black54
-                          ),
-                          border: InputBorder.none
-                        ),
-                      )
-                  ),
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (value) {
+                      initSearch();
+                    },
+                    controller: searchTextEditingController,
+                    style: TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(bottom: 8),
+                        hintText: "Search username...",
+                        hintStyle: TextStyle(color: Colors.black54),
+                        border: InputBorder.none),
+                  )),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       initSearch();
                     },
                     child: Icon(Icons.search_rounded),
@@ -231,15 +223,14 @@ class _SearchState extends State<Search> {
                 ],
               ),
             ),
-            isLoading ?
-            Container(
-              child: CircularProgressIndicator(),
-            ) : getSearchResults()
+            isLoading
+                ? Container(
+                    child: CircularProgressIndicator(),
+                  )
+                : getSearchResults()
           ],
         ),
       ),
     );
   }
 }
-
-

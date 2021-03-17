@@ -21,42 +21,40 @@ class _SignUpState extends State<SignUp> {
 
   final formKey = GlobalKey<FormState>();
   TextEditingController userNameTextEditingController =
-    new TextEditingController();
+      new TextEditingController();
   TextEditingController emailNameTextEditingController =
-    new TextEditingController();
+      new TextEditingController();
   TextEditingController passwordNameTextEditingController =
-    new TextEditingController();
+      new TextEditingController();
 
   bool isLoading = false;
 
   QuerySnapshot querySnapshot;
 
-  signMeUp(){
-    if(formKey.currentState.validate()){
+  signMeUp() {
+    if (formKey.currentState.validate()) {
       setState(() {
         isLoading = true;
       });
 
-      FirebaseFirestore.instance.collection("users")
-          .where("name",isEqualTo: userNameTextEditingController.text)
+      FirebaseFirestore.instance
+          .collection("users")
+          .where("name", isEqualTo: userNameTextEditingController.text)
           .get()
-          .then((value){
-      // check if username existed on Cloud Fire Store
-        if(value.size > 0) {
+          .then((value) {
+        // check if username existed on Cloud Fire Store
+        if (value.size > 0) {
           setState(() {
             isLoading = false;
           });
-          Toast.show(
-              "Your username is existed",
-              context, backgroundColor: Colors.red,
-              duration: 4
-          );
+          Toast.show("Your username is existed", context,
+              backgroundColor: Colors.red, duration: 4);
         }
         // if username is not existed
         else {
-          authMethods.signUpWithEmailAndPassword(
-              emailNameTextEditingController.text,
-              passwordNameTextEditingController.text)
+          authMethods
+              .signUpWithEmailAndPassword(emailNameTextEditingController.text,
+                  passwordNameTextEditingController.text)
               .then((value) {
             // check email format and existed or not
             if (value != null) {
@@ -71,25 +69,19 @@ class _SignUpState extends State<SignUp> {
               // create data on Cloud Fire Store
               databeaseMethods.uploadUserInformation(userInforMap);
               // register success, direct to Login screen
-              Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (context) => SignIn(this.widget.toggle)
-              ));
-              Toast.show(
-                  "Register successfully",
+              Navigator.pushReplacement(
                   context,
-                  backgroundColor: Colors.blue,
-                  duration: 4
-              );
+                  MaterialPageRoute(
+                      builder: (context) => SignIn(this.widget.toggle)));
+              Toast.show("Register successfully", context,
+                  backgroundColor: Colors.blue, duration: 4);
             } else {
               setState(() {
                 isLoading = false;
               });
               Toast.show(
-                  "Your email is badly formatted or already in use",
-                  context,
-                  backgroundColor: Colors.red,
-                  duration: 4
-              );
+                  "Your email is badly formatted or already in use", context,
+                  backgroundColor: Colors.red, duration: 4);
             }
           });
         }
@@ -102,115 +94,120 @@ class _SignUpState extends State<SignUp> {
     return Scaffold(
       // An app bar to display at the top of the scaffold.
       appBar: appBarMain(context),
-      body: isLoading ? Container(
-        child: Center(child: CircularProgressIndicator()),
-      )
+      body: isLoading
+          ? Container(
+              child: Center(child: CircularProgressIndicator()),
+            )
           : SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height - 300,
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Form(
-              key: formKey,
-              child: Column(
-                // Minimize the amount of free space along the main axis,
-                // subject to the incoming layout constraints.
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                    validator: (val){
-                      return val.isEmpty || val.length < 4 ?
-                      "Please enter your username > 4 characters" : null;
-                    },
-                    controller: userNameTextEditingController,
-                    decoration: textFieldInputDecoration("Username"),
-                    style: simpleTextStyle()
-                  ),
-                  TextFormField(
-                    validator: (val){
-                      return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?"
-                      r"^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(val) ? null
-                          : "Enter correct email";
-                    },
-                    controller: emailNameTextEditingController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: textFieldInputDecoration("Email"),
-                    style: simpleTextStyle()
-                  ),
-                  TextFormField(
-                    obscureText: true,
-                    validator: (val){
-                      return val.length >= 6 ? null : "At least 6 characters";
-                    },
-                    controller: passwordNameTextEditingController,
-                    decoration: textFieldInputDecoration("Password"),
-                    textInputAction: TextInputAction.go,
-                    onFieldSubmitted: (value){
-                      signMeUp();
-                    },
-                    style: simpleTextStyle(),
-                  ),
-                  SizedBox(height: 15,),
-                  GestureDetector(
-                    onTap: (){
-                      signMeUp();
-                    },
-                    child: Container(
-                        child: Container(
-                            alignment: Alignment.center,
-                            width: MediaQuery.of(context).size.width,
-                            padding: EdgeInsets.symmetric(vertical: 15),
-                            decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                      const Color(0xff007EF4),
-                                      const Color(0xff2A75BC)
-                                    ]
-                                ),
-                                borderRadius: BorderRadius.circular(30)
+              child: Container(
+                height: MediaQuery.of(context).size.height - 300,
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Form(
+                    key: formKey,
+                    child: Column(
+                      // Minimize the amount of free space along the main axis,
+                      // subject to the incoming layout constraints.
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                            validator: (val) {
+                              return val.isEmpty || val.length < 4
+                                  ? "Please enter your username > 4 characters"
+                                  : null;
+                            },
+                            controller: userNameTextEditingController,
+                            decoration: textFieldInputDecoration("Username"),
+                            style: simpleTextStyle()),
+                        TextFormField(
+                            validator: (val) {
+                              return RegExp(
+                                          r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?"
+                                          r"^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                      .hasMatch(val)
+                                  ? null
+                                  : "Enter correct email";
+                            },
+                            controller: emailNameTextEditingController,
+                            keyboardType: TextInputType.emailAddress,
+                            decoration: textFieldInputDecoration("Email"),
+                            style: simpleTextStyle()),
+                        TextFormField(
+                          obscureText: true,
+                          validator: (val) {
+                            return val.length >= 6
+                                ? null
+                                : "At least 6 characters";
+                          },
+                          controller: passwordNameTextEditingController,
+                          decoration: textFieldInputDecoration("Password"),
+                          textInputAction: TextInputAction.go,
+                          onFieldSubmitted: (value) {
+                            signMeUp();
+                          },
+                          style: simpleTextStyle(),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            signMeUp();
+                          },
+                          child: Container(
+                              child: Container(
+                                  alignment: Alignment.center,
+                                  width: MediaQuery.of(context).size.width,
+                                  padding: EdgeInsets.symmetric(vertical: 15),
+                                  decoration: BoxDecoration(
+                                      gradient: LinearGradient(colors: [
+                                        const Color(0xff007EF4),
+                                        const Color(0xff2A75BC)
+                                      ]),
+                                      borderRadius: BorderRadius.circular(30)),
+                                  child: Text(
+                                    "Sign Up",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 15),
+                                  ))),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Already have an account? ",
+                              style: mediumTextStyle(),
                             ),
-                            child: Text("Sign Up",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 15
+                            GestureDetector(
+                              onTap: () {
+                                widget.toggle();
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Text(
+                                  "Sign in now",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17,
+                                      decoration: TextDecoration.underline),
+                                ),
                               ),
                             )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 50,
                         )
+                      ],
                     ),
                   ),
-                  SizedBox(height: 15,),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("Already have an account? ",
-                        style: mediumTextStyle(),
-                      ),
-                      GestureDetector(
-                        onTap: (){
-                          widget.toggle();
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text("Sign in now",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              decoration: TextDecoration.underline
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(height: 50,)
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

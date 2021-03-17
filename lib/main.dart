@@ -26,8 +26,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  getLoggedInState() async{
-    await HelperFunctions.getUserLoggedInSharedPreference().then((value){
+  getLoggedInState() async {
+    await HelperFunctions.getUserLoggedInSharedPreference().then((value) {
       setState(() {
         userIsLoggedIn = value;
       });
@@ -37,20 +37,21 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Chat App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.lightBlue.shade900,
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: Colors.lightBlue.shade900,
       ),
-      home: userIsLoggedIn != null ?
-              userIsLoggedIn ? ChatRoom() : Authenticate()
-            : Authenticate(),
+      home: userIsLoggedIn != null
+          ? userIsLoggedIn
+              ? ChatRoom()
+              : Authenticate()
+          : Authenticate(),
     );
   }
 }
-
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);

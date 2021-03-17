@@ -16,7 +16,6 @@ class ChatRoom extends StatefulWidget {
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-
   AuthMethods authMethods = new AuthMethods();
   DatabaseMethods databaseMethods = new DatabaseMethods();
   Stream chatRoomStream;
@@ -24,28 +23,31 @@ class _ChatRoomState extends State<ChatRoom> {
   int _currentIndex = 0;
   Widget _body;
 
-  Widget chatRoomList(){
+  Widget chatRoomList() {
     return StreamBuilder(
-      stream: chatRoomStream,
-        builder: (context, snapshot){
-          return snapshot.hasData ? ListView.builder(
-            itemCount: snapshot.data.docs.length,
-            itemBuilder: (context, index){
-              return ChatRoomItem(
-                // username
-                  snapshot.data.docs[index].data()["chatroomID"].toString()
-                          .replaceAll("${Constants.myName}" + "_", "")
-                          .replaceAll("_" + "${Constants.myName}", ""),
-                 // chat room id
-                 snapshot.data.docs[index].data()["chatroomID"],
-                 // latest message, it shows below friend's name on the list
-                 snapshot.data.docs[index].data()["latestMessage"] != null
-                     ? snapshot.data.docs[index].data()["latestMessage"] : ""
-              );
-            }
-          ) : Container();
-        }
-    );
+        stream: chatRoomStream,
+        builder: (context, snapshot) {
+          return snapshot.hasData
+              ? ListView.builder(
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    return ChatRoomItem(
+                        // username
+                        snapshot.data.docs[index]
+                            .data()["chatroomID"]
+                            .toString()
+                            .replaceAll("${Constants.myName}" + "_", "")
+                            .replaceAll("_" + "${Constants.myName}", ""),
+                        // chat room id
+                        snapshot.data.docs[index].data()["chatroomID"],
+                        // latest message shows below friend's name on the list
+                        snapshot.data.docs[index].data()["latestMessage"] !=
+                                null
+                            ? snapshot.data.docs[index].data()["latestMessage"]
+                            : "");
+                  })
+              : Container();
+        });
   }
 
   @override
@@ -54,16 +56,14 @@ class _ChatRoomState extends State<ChatRoom> {
     super.initState();
   }
 
-  getUserInfo() async{
+  getUserInfo() async {
     Constants.myName = await HelperFunctions.getUserNameSharedPreference();
-    databaseMethods.getChatRooms(Constants.myName).then((value){
+    databaseMethods.getChatRooms(Constants.myName).then((value) {
       setState(() {
         chatRoomStream = value;
       });
     });
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   // ignore: non_constant_identifier_names
@@ -90,9 +90,8 @@ class _ChatRoomState extends State<ChatRoom> {
                 // this will resolve issue: 'pushReplacement' works as 'push'
                 // when navigator from a dialog
                 Navigator.of(context).popUntil((route) => route.isFirst);
-                Navigator.pushReplacement(context, MaterialPageRoute(
-                    builder: (context) => Authenticate()
-                ));
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => Authenticate()));
                 HelperFunctions.setUserLoggedInSharedPreference(false);
                 Toast.show("Log out successfully", context,
                     backgroundColor: Colors.blue, duration: 3);
@@ -116,28 +115,34 @@ class _ChatRoomState extends State<ChatRoom> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Image.asset("assets/images/logo.png", height: 50,),
+        title: Image.asset(
+          "assets/images/logo.png",
+          height: 50,
+        ),
         actions: [
           GestureDetector(
-            onTap: (){
+            onTap: () {
               warningLogOutDialog();
             },
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: Icon(Icons.logout, color: Colors.blue,)
-            ),
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Icon(
+                  Icons.logout,
+                  color: Colors.blue,
+                )),
           )
         ],
       ),
       body: _body != null ? _body : chatRoomList(),
-      floatingActionButton: _currentIndex == 0 ? FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(
-              builder: (context) => Search()
-          ));
-        },
-      ) : Container(),
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
+              child: Icon(Icons.search),
+              onPressed: () {
+                Navigator.push(
+                    context, MaterialPageRoute(builder: (context) => Search()));
+              },
+            )
+          : Container(),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
@@ -149,26 +154,30 @@ class _ChatRoomState extends State<ChatRoom> {
         onTap: (value) {
           // Respond to item press.
           setState(() => _currentIndex = value);
-          switch(value){
-            case 0: setState(() {
-              _body = chatRoomList();
-            });
-            break;
-            case 1: setState(() {
-              _body = ProfilePage();
-            });
-            break;
+          switch (value) {
+            case 0:
+              setState(() {
+                _body = chatRoomList();
+              });
+              break;
+            case 1:
+              setState(() {
+                _body = ProfilePage();
+              });
+              break;
           }
         },
         items: [
           BottomNavigationBarItem(
             title: Text('Messages'),
-            icon: _currentIndex == 0 ? Icon(Icons.message)
+            icon: _currentIndex == 0
+                ? Icon(Icons.message)
                 : Icon(Icons.message_outlined),
           ),
           BottomNavigationBarItem(
             title: Text('Profile'),
-            icon: _currentIndex == 1 ? Icon(Icons.person)
+            icon: _currentIndex == 1
+                ? Icon(Icons.person)
                 : Icon(Icons.person_outlined),
           ),
         ],
@@ -187,10 +196,9 @@ class ChatRoomItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Offset _tapDownPosition;
     return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(
-          builder: (context) => Conversation(chatroomID)
-        ));
+      onTap: () {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => Conversation(chatroomID)));
         // it will use as the chat title
         Constants.friendName = username;
       },
@@ -205,15 +213,15 @@ class ChatRoomItem extends StatelessWidget {
               width: 50,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(40)
-              ),
+                  color: Colors.blue, borderRadius: BorderRadius.circular(40)),
               child: Text(
-                "${username.substring(0,1).toUpperCase()}",
+                "${username.substring(0, 1).toUpperCase()}",
                 style: simpleTextStyle(),
               ),
             ),
-            SizedBox(width: 8,),
+            SizedBox(
+              width: 8,
+            ),
             // Display friend's name and latest message below
             Padding(
               padding: const EdgeInsets.only(),
@@ -227,9 +235,7 @@ class ChatRoomItem extends StatelessWidget {
                           style: new TextStyle(
                               color: new Color.fromARGB(255, 101, 101, 101),
                               fontSize: 17.0,
-                              fontWeight: FontWeight.bold
-                          )
-                      ),
+                              fontWeight: FontWeight.bold)),
                     ),
                     new Text(latestMessage)
                   ],
@@ -242,4 +248,3 @@ class ChatRoomItem extends StatelessWidget {
     );
   }
 }
-
