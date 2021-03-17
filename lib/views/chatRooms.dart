@@ -1,5 +1,4 @@
 import 'package:chat_app/views/profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chat_app/helper/authenticate.dart';
 import 'package:chat_app/helper/constants.dart';
 import 'package:chat_app/helper/helperfunctions.dart';

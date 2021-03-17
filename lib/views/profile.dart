@@ -14,18 +14,19 @@ class ProfilePage extends StatefulWidget {
 class MapScreenState extends State<ProfilePage>
     with SingleTickerProviderStateMixin {
   bool _status = true;
+  bool _isLoadingUpdatePassword = false;
+
   final FocusNode myFocusNode = FocusNode();
 
   DatabaseMethods _databaseMethods = new DatabaseMethods();
   QuerySnapshot _querySnapshot;
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  TextEditingController
-    passwordTextEditingController = new TextEditingController();
-  TextEditingController
-    confirmPasswordTextEditingController = new TextEditingController();
 
-  bool _isLoadingUpdatePassword = false;
+  TextEditingController passwordTextEditingController =
+    new TextEditingController();
+  TextEditingController confirmPasswordTextEditingController =
+    new TextEditingController();
 
   @override
   void initState() {
@@ -255,7 +256,10 @@ class MapScreenState extends State<ProfilePage>
                               ],
                             ),
                             Padding(
-                                padding: EdgeInsets.only(top: 90.0, right: 100.0),
+                                padding: EdgeInsets.only(
+                                    top: 90.0,
+                                    right: 100.0
+                                ),
                                 child: new Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
@@ -311,13 +315,11 @@ class MapScreenState extends State<ProfilePage>
                       setState(() {
                         _isLoadingUpdatePassword = true;
                       });
-
-                      _firebaseAuth.currentUser
-                          .updatePassword(
+                      _firebaseAuth.currentUser.updatePassword(
                           passwordTextEditingController.text ==
-                              confirmPasswordTextEditingController.text ?
-                            passwordTextEditingController.text : null)
-                          .then((_) {
+                              confirmPasswordTextEditingController.text
+                              ? passwordTextEditingController.text : null
+                      ).then((_) {
                         Toast.show(
                             "Password updated successfully",
                             context,
