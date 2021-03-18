@@ -280,35 +280,40 @@ class MapScreenState extends State<ProfilePage>
                 textColor: Colors.white,
                 color: Colors.blue,
                 onPressed: () {
-                  setState(() {
-                    _isLoadingUpdatePassword = true;
-                  });
-                  _firebaseAuth.currentUser
-                      .updatePassword(passwordTextEditingController.text ==
-                              confirmPasswordTextEditingController.text
-                          ? passwordTextEditingController.text
-                          : null)
-                      .then((_) {
-                    Toast.show("Password updated successfully", context,
-                        gravity: Toast.TOP,
-                        duration: 4,
-                        backgroundColor: Colors.blue);
+                  if (passwordTextEditingController.text ==
+                      confirmPasswordTextEditingController.text) {
                     setState(() {
-                      _isLoadingUpdatePassword = false;
-                      _status = true;
-                      FocusScope.of(context).requestFocus(new FocusNode());
-                      passwordTextEditingController.clear();
-                      confirmPasswordTextEditingController.clear();
+                      _isLoadingUpdatePassword = true;
                     });
-                  }).catchError((error) {
-                    Toast.show(error.toString(), context,
+                    _firebaseAuth.currentUser
+                        .updatePassword(passwordTextEditingController.text)
+                        .then((_) {
+                      Toast.show("Password updated successfully", context,
+                          gravity: Toast.TOP,
+                          duration: 4,
+                          backgroundColor: Colors.blue);
+                      setState(() {
+                        _isLoadingUpdatePassword = false;
+                        _status = true;
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        passwordTextEditingController.clear();
+                        confirmPasswordTextEditingController.clear();
+                      });
+                    }).catchError((error) {
+                      Toast.show(error.toString(), context,
+                          gravity: Toast.TOP,
+                          duration: 4,
+                          backgroundColor: Colors.red);
+                      setState(() {
+                        _isLoadingUpdatePassword = false;
+                      });
+                    });
+                  } else {
+                    Toast.show('Confirm password dose not match', context,
                         gravity: Toast.TOP,
                         duration: 4,
                         backgroundColor: Colors.red);
-                    setState(() {
-                      _isLoadingUpdatePassword = false;
-                    });
-                  });
+                  }
                 },
                 shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(20.0)),
