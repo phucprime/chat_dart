@@ -18,22 +18,32 @@ samples, guidance on mobile development, and a full API reference.
 ##
 ***1. Register***
 ##
-![](demo/register.gif)
+
+<img src="demo/register.gif" width="350">
+
 ##
 ***2. Login***
 ##
-![](demo/login.gif)
+
+<img src="demo/login.gif" width="350">
+
 ##
 ***3. Search***
 ##
-![](demo/search.gif)
+
+<img src="demo/search.gif" width="350">
+
 ##
 ***4. Send message***
 ##
-![](demo/send_message.gif)
+
+<img src="demo/send_message.gif" width="350">
+
 ##
 ***5. Change password***
 ##
-![](demo/change_password.gif)
+
+<img src="demo/change_password.gif" width="350">
+
 ##
 End.
