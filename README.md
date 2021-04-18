@@ -46,4 +46,3 @@ samples, guidance on mobile development, and a full API reference.
 <img src="demo/change_password.gif" width="350">
 
 ##
-End.
